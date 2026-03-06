@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دليل المستشفيات الخاصة - مصر</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --card: #1c2333;
+    --border: #30363d;
+    --accent: #2f81f7;
+    --accent2: #7c4dff;
+    --green: #3fb950;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --hot: #f78166;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #1a1f35 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 16px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .header-title {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-title span.pulse {
+    width: 10px; height: 10px;
+    background: var(--green);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+
+  .search-box {
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 40px 10px 14px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-box input:focus { border-color: var(--accent); }
+  .search-box input::placeholder { color: var(--muted); }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  /* Filter tabs */
+  .filters {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .filters::-webkit-scrollbar { display: none; }
+
+  .filter-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    color: var(--muted);
+    font-family: 'Cairo', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stats-bar span { color: var(--accent); font-weight: 700; }
+
+  /* Main content */
+  .content { padding: 12px 16px; }
+
+  /* Gov section */
+  .gov-section { margin-bottom: 8px; }
+
+  .gov-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .gov-header.collapsed { border-radius: 10px; margin-bottom: 8px; }
+
+  .gov-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .gov-badge {
+    background: var(--accent);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .gov-toggle {
+    color: var(--muted);
+    font-size: 12px;
+    transition: transform 0.2s;
+  }
+
+  .gov-toggle.open { transform: rotate(180deg); }
+
+  /* Hospital cards */
+  .hospitals-list {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .hospital-card {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 14px;
+    transition: background 0.15s;
+  }
+
+  .hospital-card:last-child { border-bottom: none; }
+  .hospital-card:hover { background: #1f2937; }
+
+  .hospital-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  .hospital-address {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  /* Phone numbers */
+  .phones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .phone-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(47, 129, 247, 0.12);
+    border: 1px solid rgba(47, 129, 247, 0.3);
+    border-radius: 8px;
+    padding: 6px 12px;
+    color: var(--accent);
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    direction: ltr;
+  }
+
+  .phone-btn:hover, .phone-btn:active {
+    background: var(--accent);
+    color: white;
+    transform: scale(0.97);
+  }
+
+  .phone-btn.hotline {
+    background: rgba(247, 129, 102, 0.12);
+    border-color: rgba(247, 129, 102, 0.3);
+    color: var(--hot);
+  }
+
+  .phone-btn.hotline:hover, .phone-btn.hotline:active {
+    background: var(--hot);
+    color: white;
+  }
+
+  .phone-btn.whatsapp {
+    background: rgba(63, 185, 80, 0.12);
+    border-color: rgba(63, 185, 80, 0.3);
+    color: var(--green);
+  }
+
+  .phone-btn.whatsapp:hover, .phone-btn.whatsapp:active {
+    background: var(--green);
+    color: white;
+  }
+
+  .phone-icon { font-size: 13px; }
+
+  /* Tags */
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+
+  .tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+
+  .tag-web {
+    background: rgba(124, 77, 255, 0.15);
+    color: #9c6dff;
+    border: 1px solid rgba(124, 77, 255, 0.2);
+  }
+
+  .tag-email {
+    background: rgba(63, 185, 80, 0.1);
+    color: var(--green);
+    border: 1px solid rgba(63, 185, 80, 0.2);
+    text-decoration: none;
+  }
+
+  .tag-note {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .label-hotline { font-size: 9px; opacity: 0.7; }
+
+  /* Done state */
+  .hospital-card.done {
+    background: rgba(63, 185, 80, 0.08);
+    border-right: 3px solid var(--green);
+    opacity: 0.75;
+  }
+
+  .hospital-card.done .hospital-name {
+    color: var(--green);
+    text-decoration: line-through;
+    text-decoration-color: rgba(63,185,80,0.5);
+  }
+
+  .done-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.05);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 5px 12px;
+    color: var(--muted);
+    font-family: 'Cairo', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .done-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(63,185,80,0.1);
+  }
+
+  .hospital-card.done .done-btn {
+    background: rgba(63,185,80,0.15);
+    border: 1px solid var(--green);
+    color: var(--green);
+  }
+
+  .done-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(63,185,80,0.15);
+    border: 1px solid rgba(63,185,80,0.3);
+    border-radius: 6px;
+    padding: 2px 8px;
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  .progress-bar-wrap {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+
+  .progress-label span { color: var(--green); font-weight: 700; }
+
+  .progress-track {
+    background: var(--border);
+    border-radius: 10px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    background: linear-gradient(90deg, var(--green), #52d975);
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }
+
+  .reset-btn {
+    float: left;
+    font-size: 10px;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  .reset-btn:hover { color: var(--hot); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">
+    <span class="pulse"></span>
+    دليل المستشفيات الخاصة 🏥
+  </div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="ابحث باسم المستشفى أو المحافظة..." oninput="filterHospitals()">
+    <span class="search-icon">🔍</span>
+  </div>
+</div>
+
+<div class="filters" id="filterTabs">
+  <button class="filter-btn active" onclick="setFilter('all', this)">الكل</button>
+  <button class="filter-btn" onclick="setFilter('الجيزة', this)">الجيزة</button>
+  <button class="filter-btn" onclick="setFilter('القاهرة', this)">القاهرة</button>
+  <button class="filter-btn" onclick="setFilter('أكتوبر', this)">6 أكتوبر</button>
+  <button class="filter-btn" onclick="setFilter('الإسكندرية', this)">الإسكندرية</button>
+  <button class="filter-btn" onclick="setFilter('الدقهلية', this)">المنصورة</button>
+  <button class="filter-btn" onclick="setFilter('الشرقية', this)">الزقازيق</button>
+  <button class="filter-btn" onclick="setFilter('البحر الأحمر', this)">الغردقة</button>
+  <button class="filter-btn" onclick="setFilter('سيناء', this)">شرم الشيخ</button>
+  <button class="filter-btn" onclick="setFilter('الإسماعيلية', this)">الإسماعيلية</button>
+  <button class="filter-btn" onclick="setFilter('سوهاج', this)">سوهاج</button>
+  <button class="filter-btn" onclick="setFilter('أسيوط', this)">أسيوط</button>
+</div>
+
+<div class="stats-bar" id="statsBar">عرض <span id="countDisplay">62</span> مستشفى</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-label">
+    <div>تم الاتصال: <span id="doneCount">0</span> من <span id="totalCount">62</span></div>
+    <button class="reset-btn" onclick="resetAll()">إعادة تعيين الكل</button>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="content" id="mainContent"></div>
+
+<script>
+const hospitals = [
+  { gov: "الجيزة - المهندسين", name: "مستشفى الصفا (ميديكال جروب)", phones: ["0233361010","0233361051","0237610915"], hotline: "16181", address: "40 ش العراق، المهندسين، الجيزة", note: "180 سريراً، 9 غرف عمليات" },
+  { gov: "الجيزة - المهندسين", name: "مستشفى السلام (المهندسين)", phones: ["0233030502","0233029970","0183424488"], address: "3 ش سوريا، المهندسين، الجيزة", note: "تابعة لمجموعة كليوباترا" },
+  { gov: "الجيزة - المهندسين", name: "مستشفى الشروق", phones: ["0233044901"], hotline: "19668", address: "3/5 ش بحر الغزال، الصحفيين، المهندسين، الجيزة", web: "cleopatrahospitals.com" },
+  { gov: "الجيزة - المهندسين", name: "مستشفى ابن النفيس", phones: ["0233048122","0233055788"], address: "8أ ش النبوي المهندس، المهندسين، الجيزة" },
+  { gov: "الجيزة - المهندسين", name: "مستشفى الأطفال التخصصي", phones: ["0237495030","01066643403"], address: "24 ش الفرات، جامعة الدول العربية، المهندسين، الجيزة", note: "جراحة أورام الأطفال وحديثي الولادة" },
+  { gov: "الجيزة - الدقي", name: "مستشفى ابن سينا", phones: ["0237601316","0237601317","0237601319"], address: "الدقي، الجيزة" },
+  { gov: "الجيزة - الدقي", name: "مستشفى دمشق", phones: ["0233470194","0233470208"], address: "الدقي، الجيزة" },
+  { gov: "الجيزة - الدقي", name: "مستشفى العيون الدولي", phones: ["0237627990"], address: "الدقي، الجيزة", note: "JCI + ISO 9001" },
+  { gov: "الجيزة - الدقي", name: "مستشفى مصر الدولي", phones: ["023608261"], address: "12 ش السرايا، الدقي، الجيزة" },
+  { gov: "القاهرة - المعادي", name: "مستشفى السلام الدولي (المعادي)", phones: ["023030501"], hotline: "19885", address: "كورنيش النيل، المعادي، القاهرة", email: "expats@assih.com", whatsapp: "01092223676" },
+  { gov: "القاهرة - المعادي", name: "مستشفى النيل بدراوي", phones: ["025240022"], hotline: "19668", address: "كورنيش النيل، المعادي، القاهرة", web: "cleopatrahospitals.com" },
+  { gov: "القاهرة - مصر الجديدة", name: "مستشفى كليوباترا (مصر الجديدة)", phones: ["0224143931"], hotline: "19668", address: "ش كليوباترا، مصر الجديدة، القاهرة", email: "q-control@cleohc.com", whatsapp: "20219668" },
+  { gov: "القاهرة - مصر الجديدة", name: "مستشفى القاهرة التخصصي", hotline: "19668", address: "4 ش أبو عبيد البكري، روكسي، مصر الجديدة", web: "cleopatrahospitals.com", note: "جراحة العظام والأعصاب" },
+  { gov: "القاهرة - مدينة نصر", name: "مستشفى دار الفؤاد (مدينة نصر)", hotline: "16370", address: "تقاطع طريق النصر مع ش يوسف عباس، مدينة نصر", web: "alameda-hc.com", whatsapp: "01100216370" },
+  { gov: "القاهرة - مدينة نصر", name: "مستشفى دار الحكمة", phones: ["0222630600"], address: "10 ش محمد حسنين هيكل، عباس العقاد، مدينة نصر" },
+  { gov: "القاهرة - حلوان/المعادي", name: "مستشفى بهمان", phones: ["0228166612"], address: "حلوان/المعادي، القاهرة", note: "أقدم مستشفى خاص للطب النفسي في مصر" },
+  { gov: "القاهرة - الزمالك", name: "مستشفى الأنجلو أمريكان", phones: ["0227356162","0227356163"], address: "الزمالك، القاهرة" },
+  { gov: "6 أكتوبر", name: "مستشفى دار الفؤاد (6 أكتوبر)", hotline: "16370", address: "طريق الواحات، بجوار جامعة مصر للعلوم والتكنولوجيا، 6 أكتوبر", web: "daralfouad.org", note: "جراحات القلب والصدر وزراعة الأعضاء" },
+  { gov: "القاهرة الجديدة - التجمع الخامس", name: "المستشفى الجوي التخصصي", phones: ["0224022960"], address: "شارع التسعين، التجمع الخامس، القاهرة الجديدة", note: "يخدم المدنيين والعسكريين" },
+  { gov: "مدينة الشروق", name: "مستشفى المركز الطبي العالمي", hotline: "16221", address: "الكيلو 42، طريق مصر إسماعيلية الصحراوي", web: "imc.org.eg", note: "أحد أكبر المستشفيات في الشرق الأوسط" },
+  { gov: "6 أكتوبر", name: "مستشفى كليوباترا أكتوبر", hotline: "19668", address: "مدينة 6 أكتوبر", web: "cleopatrahospitals.com" },
+  { gov: "القاهرة الجديدة", name: "مستشفى كليوباترا التجمع", hotline: "19668", address: "القاهرة الجديدة", web: "cleopatrahospitals.com" },
+  { gov: "الشيخ زايد", name: "مستشفى الرفيدة للولادة", address: "مدينة الشيخ زايد", note: "تخصص في طب الأمومة والطفولة" },
+  { gov: "القاهرة - حدائق القبة/الزيتون", name: "مستشفى وادي النيل", phones: ["0224562700"], hotline: "19303", address: "حدائق القبة/الزيتون، القاهرة" },
+  { gov: "الإسكندرية - سابا باشا", name: "المستشفى الألماني", phones: ["035841806"], address: "56 ش عبد السلام عارف، سابا باشا، الإسكندرية", email: "administration@thegermanhospital.com", web: "germanhospitalalex.com" },
+  { gov: "الإسكندرية - سموحة", name: "مستشفى أندلسية سموحة", phones: ["034197000"], hotline: "16781", address: "35 ش بهاء الدين غتوري، سموحة، الإسكندرية", email: "medicaltourism@andalusiagroup.net", note: "54 سريراً" },
+  { gov: "الإسكندرية - سموحة", name: "مركز الإسكندرية الطبي الجديد", phones: ["034272658","034272652"], hotline: "19555", address: "طريق 14 مايو، سموحة، الإسكندرية", email: "info@anmchosp.com", web: "anmchosp.com" },
+  { gov: "الإسكندرية - لوران", name: "مستشفى لوران", phones: ["035834241"], hotline: "19152", address: "13 ش الشعراوي، لوران، الإسكندرية", email: "info@louranhospital.com", web: "louranhospital.com" },
+  { gov: "الإسكندرية - العصافرة", name: "مستشفى مبرة العصافرة", phones: ["035551612"], hotline: "15016", address: "432 ش ملك حفني، العصافرة، الإسكندرية", web: "mabaret-alasafra.com", note: "فرع غرب: 03319007" },
+  { gov: "الإسكندرية - سيدي جابر", name: "مستشفى الملكي (Royal Hospital)", phones: ["035223066"], address: "17 ش عبد القادر رجب باشا، سيدي جابر" },
+  { gov: "الإسكندرية", name: "مستشفى إيليت (Elite)", hotline: "15461", address: "مدخل الطريق الزراعي، بعد داون تاون، الإسكندرية", note: "10 مراكز طبية متخصصة" },
+  { gov: "الإسكندرية - سموحة", name: "مستشفى سموحة الدولي", hotline: "15012", address: "1 ش فوزي معاذ، سموحة، الإسكندرية" },
+  { gov: "الإسكندرية - ستانلي", name: "مستشفى ASK (أليكس-سيدني-كيل)", phones: ["035460130","035460126"], address: "12 ش رشدي، ستانلي، الإسكندرية", note: "طب النساء والتوليد وحديثي الولادة" },
+  { gov: "الدقهلية - المنصورة", name: "مستشفى الدلتا (المنصورة)", phones: ["0502944603","0502944605"], address: "ش جيهان السادات، المنصورة، الدقهلية", email: "Info@aldeltahospitals.com", web: "aldeltahospitals.com" },
+  { gov: "الدقهلية - المنصورة", name: "مركز المنصورة الطبي (MMC)", phones: ["0502728570","0502728571"], address: "ش الهدى والنور، المنصورة", email: "Tayseer.hospital@thg-egypt.com", web: "thg-egypt.com" },
+  { gov: "الدقهلية - المنصورة", name: "مستشفى الخير", phones: ["0502504625","01101000733"], address: "153 ش قناة السويس، المنصورة", email: "info@tmc.eg", note: "أول بنك دم خاص ISO 9001 في المنصورة" },
+  { gov: "الدقهلية - المنصورة", name: "مستشفى الحكمة", phones: ["0502332691"], address: "ش علي مبارك، ميدان الحبيب، المنصورة" },
+  { gov: "الدقهلية - المنصورة", name: "مستشفى السلام الدولي (المنصورة)", address: "المنصورة", note: "خدمات فندقية عالمية" },
+  { gov: "الشرقية - الزقازيق", name: "مستشفى الأندلس (الزقازيق)", phones: ["0552193555","01050365566"], address: "أول طريق القنايات، الزقازيق، الشرقية", note: "المستشفى رقم 1 في المحافظة" },
+  { gov: "الشرقية - الزقازيق", name: "مستشفى صلاح سالم التخصصي", phones: ["01022343321"], address: "مدينة الزقازيق، الشرقية", note: "جراحة الأورام والقلب والأوعية الدموية" },
+  { gov: "الشرقية - الزقازيق", name: "مستشفى التيسير الدولي", phones: ["01066638526"], address: "شارع موقف المنصورة، خلف مسجد القدس، الزقازيق" },
+  { gov: "الشرقية - الزقازيق", name: "مستشفى حياة بالاس", phones: ["01017888852"], address: "كيلو 8 طريق الزقازيق - ميت غمر، الشرقية" },
+  { gov: "الشرقية - العاشر من رمضان", name: "مستشفى الهلال الأخضر", address: "العاشر من رمضان، الشرقية" },
+  { gov: "البحر الأحمر - الغردقة", name: "مستشفى النيل (الغردقة)", phones: ["0653550974","0653550975","0653550977"], hotline: "01202100003", address: "ش المطار، الغردقة، البحر الأحمر", email: "contactus@nilehospital.com", web: "nilehospital.com" },
+  { gov: "البحر الأحمر - الغردقة", name: "مستشفى السلام (الغردقة)", phones: ["0653615012","0653615013","01001714910"], address: "طريق الكورنيش، سقالة، الغردقة" },
+  { gov: "البحر الأحمر - الغردقة", name: "مستشفى رويال (الغردقة)", phones: ["0653448235"], address: "1 طريق المطار، سقالة، الغردقة", whatsapp: "01066699664" },
+  { gov: "البحر الأحمر - الغردقة", name: "مستشفى البحر الأحمر", phones: ["0653544850"], address: "ش النصر، الدهار، الغردقة" },
+  { gov: "البحر الأحمر - الجونة", name: "مستشفى الجونة", phones: ["0653580011"], address: "مدينة الجونة، الغردقة", note: "رعاية طبية فاخرة" },
+  { gov: "جنوب سيناء - شرم الشيخ", name: "مستشفى سيناء كلينك", phones: ["0693666850","0693666851"], address: "2 شارع البنوك، الهضبة، شرم الشيخ" },
+  { gov: "جنوب سيناء - شرم الشيخ", name: "مستشفى جنوب سيناء", phones: ["01005213283","01222124292"], address: "10 رأس كينيدي، طريق السلام، شرم الشيخ" },
+  { gov: "جنوب سيناء - شرم الشيخ", name: "مستشفى بيراميدز شرم", phones: ["0693660893"], address: "شرم الشيخ" },
+  { gov: "جنوب سيناء - شرم الشيخ", name: "مركز طب الأعماق (Hyperbaric)", phones: ["0693660922","0693660923"], address: "شرم الشيخ", note: "طوارئ الغوص" },
+  { gov: "الإسماعيلية", name: "مستشفى الزهور التخصصي", phones: ["0643239105","0643239106"], address: "المرحلة الخامسة، الإسماعيلية" },
+  { gov: "الإسماعيلية", name: "مستشفى دار الشفاء التخصصي", phones: ["0643368831"], address: "246 ش طنطا والعشرين، الإسماعيلية" },
+  { gov: "الإسماعيلية", name: "مستشفى جاردن سيتي", phones: ["0643344070"], address: "خلف مسجد أبو المجد، الإسماعيلية" },
+  { gov: "سوهاج", name: "مستشفى طيبة رويال", address: "سوهاج", note: "مؤسسة رائدة في صعيد مصر" },
+  { gov: "سوهاج", name: "مستشفى الحياة الدولي", address: "سوهاج", note: "أرقى مستشفى في صعيد مصر" },
+  { gov: "سوهاج", name: "مستشفى مكة التخصصي", address: "سوهاج" },
+  { gov: "سوهاج - المراغة", name: "مستشفى الراعي (المراغة)", address: "المراغة، سوهاج", note: "أكبر مستشفى في سوهاج" },
+  { gov: "سوهاج", name: "مستشفى سوهاج العسكري", phones: ["0932309947"], address: "المدينة الطبية، بجوار مستشفى الأورام، سوهاج" },
+  { gov: "أسيوط", name: "مركز أوراسكان (Ora-Scan)", phones: ["01063312002","0882351517"], address: "22 ش يسري راغب، أسيوط", email: "orascancustomerservice@gmail.com", note: "مركز تشخيصي لمحافظات الصعيد" },
+  { gov: "أسيوط", name: "مستشفى أسيوط العام (قسم العلاج بأجر)", phones: ["0882333158"], address: "ميدان المجذوب، أسيوط" },
+  { gov: "أسيوط", name: "مستشفى الراجحي للجامعي", phones: ["0882080105"], address: "جامعة أسيوط، أسيوط", email: "info@rlh-egypt.com", note: "متخصص في جراحات الكبد" },
+];
+
+let currentFilter = 'all';
+
+function groupByGov(list) {
+  const groups = {};
+  list.forEach(h => {
+    if (!groups[h.gov]) groups[h.gov] = [];
+    groups[h.gov].push(h);
+  });
+  return groups;
+}
+
+function renderPhones(h) {
+  let html = '<div class="phones">';
+  if (h.phones) {
+    h.phones.forEach(p => {
+      html += `<a href="tel:${p}" class="phone-btn"><span class="phone-icon">📞</span>${p}</a>`;
+    });
+  }
+  if (h.hotline) {
+    html += `<a href="tel:${h.hotline}" class="phone-btn hotline"><span class="phone-icon">🔴</span>${h.hotline} <span class="label-hotline">ساخن</span></a>`;
+  }
+  if (h.whatsapp) {
+    const num = h.whatsapp.replace(/\D/g, '');
+    html += `<a href="https://wa.me/2${num}" target="_blank" class="phone-btn whatsapp"><span class="phone-icon">💬</span>${h.whatsapp}</a>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function getHospitalId(h) {
+  return 'done_' + h.name.replace(/\s+/g, '_');
+}
+
+function isDone(h) {
+  return localStorage.getItem(getHospitalId(h)) === '1';
+}
+
+function toggleDone(name) {
+  const h = hospitals.find(x => x.name === name);
+  if (!h) return;
+  const key = getHospitalId(h);
+  if (localStorage.getItem(key) === '1') {
+    localStorage.removeItem(key);
+  } else {
+    localStorage.setItem(key, '1');
+  }
+  updateProgress();
+  // update just this card
+  const card = document.querySelector(`[data-name="${CSS.escape(name)}"]`);
+  if (card) {
+    const done = isDone(h);
+    card.classList.toggle('done', done);
+    const btn = card.querySelector('.done-btn');
+    if (btn) btn.innerHTML = done ? '✅ تم الاتصال' : '○ علّم كمكتمل';
+  }
+}
+
+function updateProgress() {
+  const total = hospitals.length;
+  const done = hospitals.filter(h => isDone(h)).length;
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('totalCount').textContent = total;
+  const pct = total ? (done / total * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function resetAll() {
+  if (!confirm('هتمسح كل العلامات — متأكد؟')) return;
+  hospitals.forEach(h => localStorage.removeItem(getHospitalId(h)));
+  updateProgress();
+  filterHospitals();
+}
+
+function renderHospital(h) {
+  let tags = '';
+  if (h.web) tags += `<a href="https://${h.web}" target="_blank" class="tag tag-web">🌐 ${h.web}</a>`;
+  if (h.email) tags += `<a href="mailto:${h.email}" class="tag tag-email">✉️ ${h.email}</a>`;
+  if (h.note) tags += `<span class="tag tag-note">ℹ️ ${h.note}</span>`;
+
+  const done = isDone(h);
+  return `
+    <div class="hospital-card ${done ? 'done' : ''}" data-name="${h.name}">
+      <div class="hospital-name">${done ? '<span class="done-badge">✅ تم</span>' : ''}${h.name}</div>
+      <div class="hospital-address">📍 ${h.address}</div>
+      ${renderPhones(h)}
+      ${tags ? `<div class="tags">${tags}</div>` : ''}
+      <button class="done-btn" onclick="toggleDone('${h.name.replace(/'/g, "\\'")}')">
+        ${done ? '✅ تم الاتصال' : '○ علّم كمكتمل'}
+      </button>
+    </div>`;
+}
+
+function render(filtered) {
+  const container = document.getElementById('mainContent');
+  const count = document.getElementById('countDisplay');
+  count.textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="no-results">🔍 لا توجد نتائج</div>';
+    return;
+  }
+
+  const groups = groupByGov(filtered);
+  let html = '';
+  Object.entries(groups).forEach(([gov, list]) => {
+    html += `
+      <div class="gov-section">
+        <div class="gov-header" onclick="toggleGov(this)">
+          <div class="gov-name">🏙️ ${gov} <span class="gov-badge">${list.length}</span></div>
+          <span class="gov-toggle open">▼</span>
+        </div>
+        <div class="hospitals-list">
+          ${list.map(renderHospital).join('')}
+        </div>
+      </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function toggleGov(header) {
+  const list = header.nextElementSibling;
+  const icon = header.querySelector('.gov-toggle');
+  if (list.style.display === 'none') {
+    list.style.display = '';
+    icon.classList.add('open');
+    header.classList.remove('collapsed');
+  } else {
+    list.style.display = 'none';
+    icon.classList.remove('open');
+    header.classList.add('collapsed');
+  }
+}
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterHospitals();
+}
+
+function filterHospitals() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  let filtered = hospitals;
+  if (currentFilter !== 'all') {
+    filtered = filtered.filter(h => h.gov.includes(currentFilter));
+  }
+  if (q) {
+    filtered = filtered.filter(h =>
+      h.name.toLowerCase().includes(q) ||
+      h.gov.toLowerCase().includes(q) ||
+      (h.address && h.address.toLowerCase().includes(q)) ||
+      (h.phones && h.phones.some(p => p.includes(q)))
+    );
+  }
+  render(filtered);
+}
+
+render(hospitals);
+updateProgress();
+</script>
+</body>
+</html>
